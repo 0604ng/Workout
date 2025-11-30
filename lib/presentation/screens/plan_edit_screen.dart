@@ -5,7 +5,7 @@ import '../../injection_container.dart';
 import '../../domain/entities/plan_entity.dart';
 import '../../domain/entities/exercise_entity.dart';
 import '../../domain/repositories/plan_repository.dart';
-import 'exercise_library_screen.dart';
+import 'exercise_categories_screen.dart'; // ← THAY ĐỔI IMPORT
 
 class PlanEditScreen extends StatefulWidget {
   final PlanEntity? plan;
@@ -50,28 +50,48 @@ class _PlanEditScreenState extends State<PlanEditScreen> {
           title: const Text("Add Exercise"),
           content: SingleChildScrollView(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: titleController,
-                  decoration: const InputDecoration(labelText: "Exercise name"),
+                  decoration: const InputDecoration(
+                    labelText: "Exercise name",
+                    border: OutlineInputBorder(),
+                  ),
                 ),
+                const SizedBox(height: 12),
                 TextField(
                   controller: descriptionController,
-                  decoration: const InputDecoration(labelText: "Description"),
+                  decoration: const InputDecoration(
+                    labelText: "Description",
+                    border: OutlineInputBorder(),
+                  ),
                   maxLines: 2,
                 ),
+                const SizedBox(height: 12),
                 TextField(
                   controller: durationController,
-                  decoration: const InputDecoration(labelText: "Duration (seconds)"),
+                  decoration: const InputDecoration(
+                    labelText: "Duration (seconds)",
+                    border: OutlineInputBorder(),
+                  ),
                   keyboardType: TextInputType.number,
                 ),
+                const SizedBox(height: 12),
                 TextField(
                   controller: imageUrlController,
-                  decoration: const InputDecoration(labelText: "Image URL (optional)"),
+                  decoration: const InputDecoration(
+                    labelText: "Image URL (optional)",
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: "Difficulty"),
+                  value: selectedDifficulty,
+                  decoration: const InputDecoration(
+                    labelText: "Difficulty",
+                    border: OutlineInputBorder(),
+                  ),
                   items: ['beginner', 'intermediate', 'advanced']
                       .map((diff) => DropdownMenuItem(
                     value: diff,
@@ -232,40 +252,16 @@ class _PlanEditScreenState extends State<PlanEditScreen> {
                 const SizedBox(height: 8),
                 ElevatedButton.icon(
                   onPressed: () async {
-                    final navigator = Navigator.of(context);
-
-                    // Hiển thị dialog chọn category
-                    final category = await showDialog<String>(
-                      context: context,
-                      builder: (_) => SimpleDialog(
-                        title: const Text('Select Category'),
-                        children: [
-                          'cardio',
-                          'strength',
-                          'flexibility',
-                          'balance'
-                        ].map((cat) {
-                          return SimpleDialogOption(
-                            onPressed: () => Navigator.pop(context, cat),
-                            child: Text(cat.toUpperCase()),
-                          );
-                        }).toList(),
+                    // ← SỬA PHẦN NÀY: Chuyển đến ExerciseCategoriesScreen
+                    final selected = await Navigator.push<ExerciseEntity>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ExerciseCategoriesScreen(),
                       ),
                     );
 
-                    if (category != null && mounted) {
-                      // Truyền selectMode: true để bật chế độ chọn
-                      final selected = await navigator.push<ExerciseEntity>(
-                        MaterialPageRoute(
-                          builder: (_) => ExerciseLibraryScreen(
-                            category: category,
-                            selectMode: true, // <--- KEY FIX: Bật chế độ chọn
-                          ),
-                        ),
-                      );
-                      if (selected != null && mounted) {
-                        setState(() => _selectedExercises.add(selected));
-                      }
+                    if (selected != null && mounted) {
+                      setState(() => _selectedExercises.add(selected));
                     }
                   },
                   icon: const Icon(Icons.list),
