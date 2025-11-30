@@ -10,7 +10,7 @@ class ExerciseCategoriesScreen extends StatelessWidget {
 
   const ExerciseCategoriesScreen({
     super.key,
-    this.selectMode = true, // ← Mặc định là true cho chế độ chọn
+    this.selectMode = true,
   });
 
   Future<List<Map<String, dynamic>>> _loadCategories() async {
